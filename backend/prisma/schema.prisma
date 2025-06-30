@@ -1,0 +1,207 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  pitcher
+  decision_maker
+  admin
+}
+
+enum SubscriptionStatus {
+  none
+  active
+  cancelled
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  completed
+  cancelled
+  no_show
+}
+
+enum NotificationType {
+  booking_confirmed
+  booking_cancelled
+  payment_received
+  review_received
+}
+
+enum UserSubscriptionStatus {
+  active
+  cancelled
+  past_due
+}
+
+model User {
+  id                    String             @id @default(uuid())
+  email                 String             @unique
+  passwordHash          String             @map("password_hash")
+  firstName             String             @map("first_name")
+  lastName              String             @map("last_name")
+  role                  UserRole
+  phone                 String?
+  timezone              String             @default("UTC")
+  stripeCustomerId      String?            @map("stripe_customer_id")
+  stripeAccountId       String?            @map("stripe_account_id")
+  isVerified            Boolean            @default(false) @map("is_verified")
+  subscriptionStatus    SubscriptionStatus @default(none) @map("subscription_status")
+  subscriptionStripeId  String?            @map("subscription_stripe_id")
+  createdAt             DateTime           @default(now()) @map("created_at")
+  updatedAt             DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  decisionMakerProfile  DecisionMakerProfile?
+  pitcherBookings       Booking[]          @relation("PitcherBookings")
+  decisionMakerBookings Booking[]          @relation("DecisionMakerBookings")
+  availabilitySlots     AvailabilitySlot[]
+  reviewsGiven          Review[]           @relation("ReviewsGiven")
+  reviewsReceived       Review[]           @relation("ReviewsReceived")
+  notifications         Notification[]
+  subscription          UserSubscription?
+  cancelledBookings     Booking[]          @relation("CancelledBy")
+
+  @@map("users")
+}
+
+model DecisionMakerProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique @map("user_id")
+  title           String
+  company         String
+  industry        String?
+  bio             String?
+  expertiseAreas  String[] @map("expertise_areas")
+  yearsExperience Int?     @map("years_experience")
+  hourlyRate      Decimal  @default(100.00) @map("hourly_rate") @db.Decimal(10, 2)
+  avatarUrl       String?  @map("avatar_url")
+  linkedinUrl     String?  @map("linkedin_url")
+  isActive        Boolean  @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("decision_maker_profiles")
+}
+
+model AvailabilitySlot {
+  id               String   @id @default(uuid())
+  decisionMakerId  String   @map("decision_maker_id")
+  dayOfWeek        Int      @map("day_of_week") // 0=Sunday, 1=Monday, etc.
+  startTime        String   @map("start_time") // Store as "HH:MM" format
+  endTime          String   @map("end_time")   // Store as "HH:MM" format
+  isActive         Boolean  @default(true) @map("is_active")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  // Relations
+  decisionMaker User @relation(fields: [decisionMakerId], references: [id], onDelete: Cascade)
+
+  @@map("availability_slots")
+}
+
+model Booking {
+  id                     String        @id @default(uuid())
+  pitcherId              String        @map("pitcher_id")
+  decisionMakerId        String        @map("decision_maker_id")
+  scheduledAt            DateTime      @map("scheduled_at")
+  durationMinutes        Int           @default(15) @map("duration_minutes")
+  status                 BookingStatus @default(pending)
+  amountCharged          Decimal       @map("amount_charged") @db.Decimal(10, 2)
+  platformFee            Decimal       @map("platform_fee") @db.Decimal(10, 2)
+  decisionMakerPayout    Decimal       @map("decision_maker_payout") @db.Decimal(10, 2)
+  stripePaymentIntentId  String?       @map("stripe_payment_intent_id")
+  stripeTransferId       String?       @map("stripe_transfer_id")
+  meetingLink            String?       @map("meeting_link")
+  notes                  String?
+  cancellationReason     String?       @map("cancellation_reason")
+  cancelledBy            String?       @map("cancelled_by")
+  cancelledAt            DateTime?     @map("cancelled_at")
+  createdAt              DateTime      @default(now()) @map("created_at")
+  updatedAt              DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  pitcher        User     @relation("PitcherBookings", fields: [pitcherId], references: [id], onDelete: Cascade)
+  decisionMaker  User     @relation("DecisionMakerBookings", fields: [decisionMakerId], references: [id], onDelete: Cascade)
+  cancelledByUser User?   @relation("CancelledBy", fields: [cancelledBy], references: [id])
+  reviews        Review[]
+
+  @@map("bookings")
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  bookingId  String   @map("booking_id")
+  reviewerId String   @map("reviewer_id")
+  revieweeId String   @map("reviewee_id")
+  rating     Int      @db.SmallInt
+  comment    String?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  booking  Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  reviewer User    @relation("ReviewsGiven", fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviewee User    @relation("ReviewsReceived", fields: [revieweeId], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
+}
+
+model SubscriptionPlan {
+  id                   String   @id @default(uuid())
+  name                 String
+  priceMonthly         Decimal  @map("price_monthly") @db.Decimal(10, 2)
+  reducedFeePercentage Decimal? @map("reduced_fee_percentage") @db.Decimal(5, 2)
+  features             String[]
+  isActive             Boolean  @default(true) @map("is_active")
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  // Relations
+  subscriptions UserSubscription[]
+
+  @@map("subscription_plans")
+}
+
+model UserSubscription {
+  id                   String                 @id @default(uuid())
+  userId               String                 @unique @map("user_id")
+  planId               String                 @map("plan_id")
+  stripeSubscriptionId String                 @map("stripe_subscription_id")
+  status               UserSubscriptionStatus
+  currentPeriodStart   DateTime               @map("current_period_start")
+  currentPeriodEnd     DateTime               @map("current_period_end")
+  createdAt            DateTime               @default(now()) @map("created_at")
+  updatedAt            DateTime               @updatedAt @map("updated_at")
+
+  // Relations
+  user User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan SubscriptionPlan @relation(fields: [planId], references: [id])
+
+  @@map("user_subscriptions")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String           @map("user_id")
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false) @map("is_read")
+  metadata  Json?
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}

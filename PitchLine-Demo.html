@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PitchLine - Live Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .bg-primary-600 { background-color: #2563eb; }
+        .bg-primary-700 { background-color: #1d4ed8; }
+        .text-primary-600 { color: #2563eb; }
+        .text-primary-700 { color: #1d4ed8; }
+        .border-primary-500 { border-color: #3b82f6; }
+        .primary-100 { background-color: #dbeafe; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-primary-700">PitchLine</h1>
+                    <span class="ml-3 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">LIVE DEMO</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="loginBtn" class="bg-primary-600 text-white px-4 py-2 rounded-md text-sm hover:bg-primary-700">
+                        Login Demo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Login Screen -->
+        <div id="loginScreen" class="max-w-md mx-auto">
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold text-center mb-6">Sign in to PitchLine</h2>
+                <form class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <select id="demoUser" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            <option value="pitcher">jane.smith@startup.com (Pitcher)</option>
+                            <option value="dm">john.doe@techcorp.com (Decision Maker)</option>
+                            <option value="admin">admin@pitchline.com (Admin)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input type="password" value="password123" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50">
+                    </div>
+                    <button type="button" onclick="login()" class="w-full bg-primary-600 text-white py-2 rounded-md hover:bg-primary-700">
+                        Sign In
+                    </button>
+                </form>
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    Select a user type above to see their dashboard
+                </p>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboardContent" class="hidden">
+            <!-- Navigation Tabs -->
+            <div class="mb-8">
+                <nav class="flex space-x-8 border-b border-gray-200">
+                    <button onclick="showDashboard()" id="dashTab" class="tab-btn py-2 px-1 border-b-2 border-primary-500 text-primary-600 font-medium">
+                        Dashboard
+                    </button>
+                    <button onclick="showBrowse()" id="browseTab" class="tab-btn py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
+                        Browse Experts
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Pitcher Dashboard -->
+            <div id="pitcherDash" class="dashboard-content">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Pitcher Dashboard</h1>
+                        <p class="text-gray-600">Book calls with decision makers and grow your business</p>
+                    </div>
+                    <button onclick="logout()" class="bg-gray-500 text-white px-4 py-2 rounded-md">Logout</button>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-blue-100 rounded-lg">
+                                <i data-lucide="calendar" class="w-6 h-6 text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">This Month</p>
+                                <p class="text-2xl font-bold text-gray-900">3</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-green-100 rounded-lg">
+                                <i data-lucide="users" class="w-6 h-6 text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Total Calls</p>
+                                <p class="text-2xl font-bold text-gray-900">12</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-yellow-100 rounded-lg">
+                                <i data-lucide="clock" class="w-6 h-6 text-yellow-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Upcoming</p>
+                                <p class="text-2xl font-bold text-gray-900">2</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-purple-100 rounded-lg">
+                                <i data-lucide="trending-up" class="w-6 h-6 text-purple-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Success Rate</p>
+                                <p class="text-2xl font-bold text-gray-900">85%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="text-lg font-semibold mb-4">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <button onclick="showBrowse()" class="w-full bg-primary-600 text-white py-2 rounded-md hover:bg-primary-700">
+                                Browse Decision Makers
+                            </button>
+                            <button class="w-full border border-gray-300 text-gray-700 py-2 rounded-md hover:bg-gray-50">
+                                View My Bookings
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="text-lg font-semibold mb-4">Recent Bookings</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                                <div>
+                                    <p class="font-medium">John Doe - VP Product</p>
+                                    <p class="text-sm text-gray-600">Tomorrow, 2:00 PM</p>
+                                </div>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Confirmed</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                                <div>
+                                    <p class="font-medium">Sarah Wilson - CMO</p>
+                                    <p class="text-sm text-gray-600">Next Week, 10:00 AM</p>
+                                </div>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Pending</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decision Maker Dashboard -->
+            <div id="dmDash" class="dashboard-content hidden">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Decision Maker Dashboard</h1>
+                        <p class="text-gray-600">Manage your availability and connect with pitchers</p>
+                    </div>
+                    <button onclick="logout()" class="bg-gray-500 text-white px-4 py-2 rounded-md">Logout</button>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-green-100 rounded-lg">
+                                <i data-lucide="dollar-sign" class="w-6 h-6 text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">This Month</p>
+                                <p class="text-2xl font-bold text-gray-900">$450</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-blue-100 rounded-lg">
+                                <i data-lucide="users" class="w-6 h-6 text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Total Calls</p>
+                                <p class="text-2xl font-bold text-gray-900">28</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-yellow-100 rounded-lg">
+                                <i data-lucide="calendar" class="w-6 h-6 text-yellow-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Upcoming</p>
+                                <p class="text-2xl font-bold text-gray-900">5</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-purple-100 rounded-lg">
+                                <i data-lucide="star" class="w-6 h-6 text-purple-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Avg Rating</p>
+                                <p class="text-2xl font-bold text-gray-900">4.8</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm border">
+                    <h3 class="text-lg font-semibold mb-4">Profile Status</h3>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-medium">John Doe - VP of Product at TechCorp</p>
+                            <p class="text-sm text-gray-600">Rate: $100/call • Available Mon-Fri 9AM-5PM PST</p>
+                        </div>
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Active</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Browse Experts -->
+            <div id="browseContent" class="hidden">
+                <h2 class="text-2xl font-bold mb-6">Browse Decision Makers</h2>
+                
+                <!-- Filters -->
+                <div class="bg-white p-6 rounded-lg shadow-sm border mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Industry</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <option>All Industries</option>
+                                <option>Technology</option>
+                                <option>Finance</option>
+                                <option>Healthcare</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Expertise</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <option>All Expertise</option>
+                                <option>Product Management</option>
+                                <option>Marketing</option>
+                                <option>Sales</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Experience</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <option>Any Experience</option>
+                                <option>5-10 years</option>
+                                <option>10+ years</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button class="w-full bg-primary-600 text-white py-2 rounded-md hover:bg-primary-700">
+                                Apply Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expert Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- John Doe -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 primary-100 rounded-full flex items-center justify-center">
+                                <span class="text-primary-600 font-semibold">JD</span>
+                            </div>
+                            <div class="text-right">
+                                <div class="flex items-center">
+                                    <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-current"></i>
+                                    <span class="ml-1 text-sm text-gray-600">4.9</span>
+                                </div>
+                                <span class="text-xs text-gray-500">23 reviews</span>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-1">John Doe</h3>
+                        <p class="text-sm text-gray-600 mb-2">VP of Product at TechCorp</p>
+                        <div class="flex items-center text-sm text-gray-500 mb-3">
+                            <i data-lucide="map-pin" class="w-4 h-4 mr-1"></i>
+                            <span>San Francisco, CA</span>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-4">
+                            15+ years in product management at scale. Expert in B2B SaaS, product strategy, and go-to-market planning.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Product Strategy</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">B2B SaaS</span>
+                            <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Leadership</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="text-lg font-bold text-gray-900">$100</div>
+                            <button class="flex items-center px-4 py-2 bg-primary-600 text-white text-sm rounded-md hover:bg-primary-700">
+                                <i data-lucide="calendar" class="w-4 h-4 mr-2"></i>
+                                Book Call
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sarah Wilson -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 primary-100 rounded-full flex items-center justify-center">
+                                <span class="text-primary-600 font-semibold">SW</span>
+                            </div>
+                            <div class="text-right">
+                                <div class="flex items-center">
+                                    <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-current"></i>
+                                    <span class="ml-1 text-sm text-gray-600">4.8</span>
+                                </div>
+                                <span class="text-xs text-gray-500">18 reviews</span>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-1">Sarah Wilson</h3>
+                        <p class="text-sm text-gray-600 mb-2">Chief Marketing Officer at FinTech</p>
+                        <div class="flex items-center text-sm text-gray-500 mb-3">
+                            <i data-lucide="map-pin" class="w-4 h-4 mr-1"></i>
+                            <span>New York, NY</span>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-4">
+                            12+ years driving growth at scale. Expert in digital marketing, customer acquisition, and brand strategy.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Digital Marketing</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Growth</span>
+                            <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Branding</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="text-lg font-bold text-gray-900">$100</div>
+                            <button class="flex items-center px-4 py-2 bg-primary-600 text-white text-sm rounded-md hover:bg-primary-700">
+                                <i data-lucide="calendar" class="w-4 h-4 mr-2"></i>
+                                Book Call
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Mike Chen -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 primary-100 rounded-full flex items-center justify-center">
+                                <span class="text-primary-600 font-semibold">MC</span>
+                            </div>
+                            <div class="text-right">
+                                <div class="flex items-center">
+                                    <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-current"></i>
+                                    <span class="ml-1 text-sm text-gray-600">4.7</span>
+                                </div>
+                                <span class="text-xs text-gray-500">15 reviews</span>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-1">Mike Chen</h3>
+                        <p class="text-sm text-gray-600 mb-2">Head of Sales at Enterprise Corp</p>
+                        <div class="flex items-center text-sm text-gray-500 mb-3">
+                            <i data-lucide="map-pin" class="w-4 h-4 mr-1"></i>
+                            <span>Austin, TX</span>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-4">
+                            10+ years scaling sales teams. Expert in enterprise sales, team building, and revenue operations.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Enterprise Sales</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">RevOps</span>
+                            <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Team Building</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="text-lg font-bold text-gray-900">$100</div>
+                            <button class="flex items-center px-4 py-2 bg-primary-600 text-white text-sm rounded-md hover:bg-primary-700">
+                                <i data-lucide="calendar" class="w-4 h-4 mr-2"></i>
+                                Book Call
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        
+        function login() {
+            const userType = document.getElementById('demoUser').value;
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboardContent').classList.remove('hidden');
+            
+            if (userType === 'pitcher') {
+                document.getElementById('pitcherDash').classList.remove('hidden');
+                document.getElementById('dmDash').classList.add('hidden');
+            } else if (userType === 'dm' || userType === 'admin') {
+                document.getElementById('dmDash').classList.remove('hidden');
+                document.getElementById('pitcherDash').classList.add('hidden');
+            }
+            
+            showDashboard();
+        }
+        
+        function logout() {
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('dashboardContent').classList.add('hidden');
+        }
+        
+        function showDashboard() {
+            document.getElementById('browseContent').classList.add('hidden');
+            document.querySelectorAll('.dashboard-content').forEach(el => {
+                if (!el.classList.contains('hidden')) {
+                    el.classList.remove('hidden');
+                }
+            });
+            
+            // Update tabs
+            document.getElementById('dashTab').classList.add('border-primary-500', 'text-primary-600');
+            document.getElementById('dashTab').classList.remove('border-transparent', 'text-gray-500');
+            document.getElementById('browseTab').classList.remove('border-primary-500', 'text-primary-600');
+            document.getElementById('browseTab').classList.add('border-transparent', 'text-gray-500');
+        }
+        
+        function showBrowse() {
+            document.querySelectorAll('.dashboard-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('browseContent').classList.remove('hidden');
+            
+            // Update tabs
+            document.getElementById('browseTab').classList.add('border-primary-500', 'text-primary-600');
+            document.getElementById('browseTab').classList.remove('border-transparent', 'text-gray-500');
+            document.getElementById('dashTab').classList.remove('border-primary-500', 'text-primary-600');
+            document.getElementById('dashTab').classList.add('border-transparent', 'text-gray-500');
+        }
+    </script>
+</body>
+</html>
